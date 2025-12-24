@@ -35,7 +35,9 @@ export default function Footer() {
       <div 
         className="absolute inset-0 bg-cover bg-center"
         style={{
-          backgroundImage: "url('/ocean-frieght-forwarding.png')",
+          backgroundImage: typeof window !== 'undefined' && window.location.pathname.startsWith('/BinMujeeb')
+            ? "url('/BinMujeeb/ocean-frieght-forwarding.png')"
+            : "url('/ocean-frieght-forwarding.png')",
           filter: "blur(8px)",
           transform: "scale(1.1)",
         }}

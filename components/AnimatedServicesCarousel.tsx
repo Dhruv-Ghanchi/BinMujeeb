@@ -14,6 +14,28 @@ interface Service {
   thumbnailImages: string[];
 }
 
+// Helper function to get base path dynamically
+const getBasePath = () => {
+  if (typeof window !== 'undefined') {
+    const pathname = window.location.pathname;
+    if (pathname.startsWith('/BinMujeeb')) {
+      return '/BinMujeeb';
+    }
+  }
+  return process.env.NEXT_PUBLIC_BASE_PATH || '';
+};
+
+// Helper function to get base path
+const getBasePath = () => {
+  if (typeof window !== 'undefined') {
+    const pathname = window.location.pathname;
+    if (pathname.startsWith('/BinMujeeb')) {
+      return '/BinMujeeb';
+    }
+  }
+  return process.env.NEXT_PUBLIC_BASE_PATH || '';
+};
+
 const services: Service[] = [
   {
     id: 4,
@@ -76,12 +98,19 @@ export default function AnimatedServicesCarousel() {
   const thumbnailContainerRef = useRef<HTMLDivElement>(null); // Container for thumbnails
   const progressTimelineRef = useRef<gsap.core.Tween | null>(null);
 
+  // Helper to add basePath to image URLs
+  const getImageUrl = (url: string) => {
+    if (!url || url.startsWith('http')) return url;
+    const base = getBasePath();
+    return base + url;
+  };
+
   useEffect(() => {
     // Preload all background images
     services.forEach((service) => {
       if (service.backgroundImageUrl) {
         const img = new Image();
-        img.src = service.backgroundImageUrl;
+        img.src = getImageUrl(service.backgroundImageUrl);
       }
     });
 
@@ -275,17 +304,17 @@ export default function AnimatedServicesCarousel() {
           img.onload = () => {
             // Image loaded, now set it as background
             if (backgroundImageRef.current) {
-              const finalBgUrl = `url("${service.backgroundImageUrl}")`;
+              const finalBgUrl = `url("${getImageUrl(service.backgroundImageUrl)}")`;
               backgroundImageRef.current.style.setProperty('background-image', finalBgUrl, 'important');
               backgroundImageRef.current.style.setProperty('background-size', 'cover', 'important');
               backgroundImageRef.current.style.setProperty('background-position', 'center', 'important');
               backgroundImageRef.current.style.setProperty('background-repeat', 'no-repeat', 'important');
             }
           };
-          img.src = service.backgroundImageUrl;
+          img.src = getImageUrl(service.backgroundImageUrl);
           
           // Set immediately as well (in case image is cached)
-          const finalBgUrl = `url("${service.backgroundImageUrl}")`;
+          const finalBgUrl = `url("${getImageUrl(service.backgroundImageUrl)}")`;
           backgroundImageRef.current.style.setProperty('background-image', finalBgUrl, 'important');
           backgroundImageRef.current.style.setProperty('background-size', 'cover', 'important');
           backgroundImageRef.current.style.setProperty('background-position', 'center', 'important');
@@ -408,9 +437,7 @@ export default function AnimatedServicesCarousel() {
               if (nextThumbnails[0] !== undefined) {
                 const thumbService = services[nextThumbnails[0]];
                 if (thumbService && thumbService.backgroundImageUrl) {
-                  const bgUrl = thumbService.backgroundImageUrl.startsWith('http') 
-                    ? thumbService.backgroundImageUrl 
-                    : thumbService.backgroundImageUrl;
+                  const bgUrl = getImageUrl(thumbService.backgroundImageUrl);
                   thumb.style.backgroundImage = `url("${bgUrl}")`;
                   thumb.style.backgroundSize = 'cover';
                   thumb.style.backgroundPosition = 'center';
@@ -537,7 +564,9 @@ export default function AnimatedServicesCarousel() {
       if (backgroundImageRef.current) {
         // Set initial background image
         const bgImageUrl = service.backgroundImageUrl || `linear-gradient(to bottom right, #3b82f6, #1e40af)`;
-        const finalBgUrl = bgImageUrl.startsWith('http') ? `url("${bgImageUrl}")` : bgImageUrl;
+        const finalBgUrl = bgImageUrl.startsWith('http') || bgImageUrl.startsWith('linear-gradient') 
+          ? `url("${bgImageUrl}")` 
+          : `url("${getImageUrl(bgImageUrl)}")`;
         
         backgroundImageRef.current.style.setProperty('background-image', finalBgUrl, 'important');
         backgroundImageRef.current.style.setProperty('background-size', 'cover', 'important');
@@ -662,7 +691,7 @@ export default function AnimatedServicesCarousel() {
         className="absolute inset-0"
         style={{
           backgroundImage: currentService.backgroundImageUrl 
-            ? `url("${currentService.backgroundImageUrl}")` 
+            ? `url("${getImageUrl(currentService.backgroundImageUrl)}")` 
             : `linear-gradient(to bottom right, #3b82f6, #1e40af)`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -778,7 +807,7 @@ export default function AnimatedServicesCarousel() {
                       const currentServiceIndex = currentIndices[index];
                       const currentService = services[currentServiceIndex];
                       if (currentService && currentService.backgroundImageUrl) {
-                        el.style.backgroundImage = `url("${currentService.backgroundImageUrl}")`;
+                        el.style.backgroundImage = `url("${getImageUrl(currentService.backgroundImageUrl)}")`;
                         el.style.backgroundSize = 'cover';
                         el.style.backgroundPosition = 'center';
                         el.style.backgroundRepeat = 'no-repeat';
