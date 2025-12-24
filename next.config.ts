@@ -11,8 +11,9 @@ const nextConfig: NextConfig = {
   },
   basePath: basePath,
   assetPrefix: basePath,
-  // Skip API routes during static export
   trailingSlash: true,
+  // Exclude API routes from build
+  distDir: 'out',
 }
 
 export default nextConfig

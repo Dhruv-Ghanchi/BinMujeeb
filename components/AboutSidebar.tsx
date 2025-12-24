@@ -62,7 +62,7 @@ export default function AboutSidebar() {
             return (
               <li 
                 key={link.href}
-                ref={(el) => (itemRefs.current[index] = el)}
+                ref={(el) => { itemRefs.current[index] = el; }}
                 className="relative"
               >
                 <Link

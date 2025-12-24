@@ -74,7 +74,7 @@ export default function AnimatedServicesCarousel() {
   const backgroundImageRef = useRef<HTMLDivElement>(null);
   const thumbnailRefs = useRef<(HTMLDivElement | null)[]>([]);
   const thumbnailContainerRef = useRef<HTMLDivElement>(null); // Container for thumbnails
-  const progressTimelineRef = useRef<gsap.core.Timeline | null>(null);
+  const progressTimelineRef = useRef<gsap.core.Tween | null>(null);
 
   useEffect(() => {
     // Preload all background images
