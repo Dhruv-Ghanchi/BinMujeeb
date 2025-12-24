@@ -25,17 +25,6 @@ const getBasePath = () => {
   return process.env.NEXT_PUBLIC_BASE_PATH || '';
 };
 
-// Helper function to get base path
-const getBasePath = () => {
-  if (typeof window !== 'undefined') {
-    const pathname = window.location.pathname;
-    if (pathname.startsWith('/BinMujeeb')) {
-      return '/BinMujeeb';
-    }
-  }
-  return process.env.NEXT_PUBLIC_BASE_PATH || '';
-};
-
 const services: Service[] = [
   {
     id: 4,
@@ -303,7 +292,7 @@ export default function AnimatedServicesCarousel() {
           const img = new Image();
           img.onload = () => {
             // Image loaded, now set it as background
-            if (backgroundImageRef.current) {
+            if (backgroundImageRef.current && service.backgroundImageUrl) {
               const finalBgUrl = `url("${getImageUrl(service.backgroundImageUrl)}")`;
               backgroundImageRef.current.style.setProperty('background-image', finalBgUrl, 'important');
               backgroundImageRef.current.style.setProperty('background-size', 'cover', 'important');
