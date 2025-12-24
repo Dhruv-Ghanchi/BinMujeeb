@@ -33,20 +33,20 @@ export default function ContactPage() {
     setSubmitStatus({ type: null, message: "" });
 
     try {
-      const response = await fetch("/api/contact", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
+      // For static export, use mailto link as fallback
+      const isStaticExport = typeof window !== 'undefined' && window.location.hostname.includes('github.io');
+      
+      if (isStaticExport) {
+        // Create mailto link for static sites
+        const subject = encodeURIComponent(formData.subject || `Contact from ${formData.name}`);
+        const body = encodeURIComponent(
+          `Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone || 'N/A'}\n\nMessage:\n${formData.message}`
+        );
+        window.location.href = `mailto:info@binmujeeb.com?subject=${subject}&body=${body}`;
+        
         setSubmitStatus({
           type: "success",
-          message: "Thank you! Your enquiry has been sent successfully. We'll get back to you soon.",
+          message: "Opening your email client. Please send the email to complete your enquiry.",
         });
         setFormData({
           name: "",
@@ -56,10 +56,35 @@ export default function ContactPage() {
           message: "",
         });
       } else {
-        setSubmitStatus({
-          type: "error",
-          message: data.error || "Failed to send enquiry. Please try again.",
+        // Use API route for non-static deployments
+        const response = await fetch("/api/contact", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
         });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setSubmitStatus({
+            type: "success",
+            message: "Thank you! Your enquiry has been sent successfully. We'll get back to you soon.",
+          });
+          setFormData({
+            name: "",
+            email: "",
+            phone: "",
+            subject: "",
+            message: "",
+          });
+        } else {
+          setSubmitStatus({
+            type: "error",
+            message: data.error || "Failed to send enquiry. Please try again.",
+          });
+        }
       }
     } catch (error) {
       setSubmitStatus({
